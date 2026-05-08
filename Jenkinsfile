@@ -96,14 +96,14 @@ pipeline {
 
         success {
             echo "✅ Pipeline completed successfully"
-            mail to: 'your-email@gmail.com',
+            mail to: 'harisankar.doodleblue@gmail.com@gmail.com',
                  subject: "SUCCESS: Trivy Multi-Service Build ${BUILD_NUMBER}",
                  body: "Build completed. Check reports folder."
         }
 
         failure {
             echo "❌ Pipeline failed"
-            mail to: 'your-email@gmail.com',
+            mail to: 'harisankar.doodleblue@gmail.com@gmail.com',
                  subject: "FAILED: Trivy Multi-Service Build ${BUILD_NUMBER}",
                  body: "Check Jenkins logs."
         }
