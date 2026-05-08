@@ -1,0 +1,9 @@
+# Old vulnerable versions for user service
+Flask==1.0.0
+PyYAML==3.13
+Pillow==5.0.0
+SQLAlchemy==1.2.0
+Werkzeug==0.15.0
+Jinja2==2.10.1
+MarkupSafe==2.0.1
+paramiko==2.4.0
