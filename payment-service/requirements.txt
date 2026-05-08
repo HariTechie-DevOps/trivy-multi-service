@@ -1,0 +1,9 @@
+# Old vulnerable versions for payment service
+Flask==1.0.0
+requests==2.18.4
+cryptography==2.1.4
+urllib3==1.22
+Werkzeug==0.15.0
+Jinja2==2.10.1
+MarkupSafe==2.0.1
+pyOpenSSL==17.5.0
