@@ -1,0 +1,9 @@
+# Old vulnerable versions for notification service
+Flask==1.0.0
+requests==2.18.4
+paramiko==2.4.0
+urllib3==1.22
+Werkzeug==0.15.0
+Jinja2==2.10.1
+MarkupSafe==2.0.1
+pycryptodome==3.4.6
