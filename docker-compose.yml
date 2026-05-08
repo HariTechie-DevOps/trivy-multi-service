@@ -2,79 +2,113 @@ version: "3.9"
 
 services:
 
-  # =========================
-  # 🧠 MICROSERVICES LAYER
-  # =========================
-
+  # =========================================================
+  # 🔐 AUTH SERVICE
+  # =========================================================
   auth-service:
-    build: ./services/auth-service
+    build:
+      context: ./services/auth-service
     container_name: auth-service
     ports:
       - "5001:5001"
+    restart: unless-stopped
     networks:
       - devsecops-net
 
+  # =========================================================
+  # 💳 PAYMENT SERVICE
+  # =========================================================
   payment-service:
-    build: ./services/payment-service
+    build:
+      context: ./services/payment-service
     container_name: payment-service
     ports:
       - "5002:5002"
+    restart: unless-stopped
     networks:
       - devsecops-net
 
+  # =========================================================
+  # 👤 USER SERVICE
+  # =========================================================
   user-service:
-    build: ./services/user-service
+    build:
+      context: ./services/user-service
     container_name: user-service
     ports:
       - "5003:5003"
+    restart: unless-stopped
     networks:
       - devsecops-net
 
+  # =========================================================
+  # 📧 NOTIFICATION SERVICE
+  # =========================================================
   notification-service:
-    build: ./services/notification-service
+    build:
+      context: ./services/notification-service
     container_name: notification-service
     ports:
       - "5004:5004"
+    restart: unless-stopped
     networks:
       - devsecops-net
 
+  # =========================================================
+  # 📊 TRIVY EXPORTER
+  # =========================================================
+  trivy-exporter:
+    build:
+      context: ./exporter
+    container_name: trivy-exporter
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./reports:/reports
+    restart: unless-stopped
+    depends_on:
+      - auth-service
+      - payment-service
+      - user-service
+      - notification-service
+    networks:
+      - devsecops-net
 
-  # =========================
-  # 📊 PROMETHEUS (METRICS CORE)
-  # =========================
-
+  # =========================================================
+  # 📈 PROMETHEUS
+  # =========================================================
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
+    ports:
+      - "9090:9090"
     restart: unless-stopped
     volumes:
       - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-    ports:
-      - "9090:9090"
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+    depends_on:
+      - trivy-exporter
     networks:
       - devsecops-net
 
-
-  # =========================
-  # 📈 GRAFANA (VISUALIZATION LAYER)
-  # =========================
-
+  # =========================================================
+  # 📉 GRAFANA
+  # =========================================================
   grafana:
     image: grafana/grafana:latest
     container_name: grafana
-    restart: unless-stopped
     ports:
       - "3000:3000"
+    restart: unless-stopped
     depends_on:
       - prometheus
     networks:
       - devsecops-net
 
-
-# =========================
-# 🌐 INTERNAL NETWORK
-# =========================
-
+# =========================================================
+# 🌐 NETWORK
+# =========================================================
 networks:
   devsecops-net:
     driver: bridge
