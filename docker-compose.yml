@@ -1,0 +1,80 @@
+version: "3.9"
+
+services:
+
+  # =========================
+  # 🧠 MICROSERVICES LAYER
+  # =========================
+
+  auth-service:
+    build: ./services/auth-service
+    container_name: auth-service
+    ports:
+      - "5001:5001"
+    networks:
+      - devsecops-net
+
+  payment-service:
+    build: ./services/payment-service
+    container_name: payment-service
+    ports:
+      - "5002:5002"
+    networks:
+      - devsecops-net
+
+  user-service:
+    build: ./services/user-service
+    container_name: user-service
+    ports:
+      - "5003:5003"
+    networks:
+      - devsecops-net
+
+  notification-service:
+    build: ./services/notification-service
+    container_name: notification-service
+    ports:
+      - "5004:5004"
+    networks:
+      - devsecops-net
+
+
+  # =========================
+  # 📊 PROMETHEUS (METRICS CORE)
+  # =========================
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: unless-stopped
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - devsecops-net
+
+
+  # =========================
+  # 📈 GRAFANA (VISUALIZATION LAYER)
+  # =========================
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    networks:
+      - devsecops-net
+
+
+# =========================
+# 🌐 INTERNAL NETWORK
+# =========================
+
+networks:
+  devsecops-net:
+    driver: bridge
